@@ -66,11 +66,12 @@ static char * modules[] = {
 	"PCNET.KO",    // 19
 	"RTL.KO",      // 20
 	"E1000.KO",    // 21
+	"PCSPKR.KO",   // 22
 	0
 };
 
 
-static mboot_mod_t modules_mboot[23] = {
+static mboot_mod_t modules_mboot[sizeof(modules)/sizeof(*modules)] = {
 	{0,0,0,1}
 };
 
@@ -80,7 +81,7 @@ static struct multiboot multiboot_header = {
 	/* mem_upper;         */ 0x640000,
 	/* boot_device;       */ 0,
 	/* cmdline;           */ 0,
-	/* mods_count;        */ 23,
+	/* mods_count;        */ sizeof(modules)/sizeof(*modules),
 	/* mods_addr;         */ (uintptr_t)&modules_mboot,
 	/* num;               */ 0,
 	/* size;              */ 0,
@@ -321,8 +322,11 @@ int kmain() {
 	b &= ~8;
 	outportb(0x3c0, b);
 
+	clear_();
+
 	do {
-		clear_();
+		x = 0;
+		y = 0;
 		attr = 0x1f;
 		print_banner("ToaruOS-NIH Bootloader v1.0");
 		attr = 0x07;
