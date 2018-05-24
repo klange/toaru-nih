@@ -200,6 +200,7 @@ static uint16_t bochs_current_scroll(void) {
 
 static void bochs_scan_pci(uint32_t device, uint16_t v, uint16_t d, void * extra) {
 	if ((v == 0x1234 && d == 0x1111) ||
+		(v == 0x1AF4 && d == 0x1050) ||
 	    (v == 0x80EE && d == 0xBEEF) ||
 	    (v == 0x10de && d == 0x0a20))  {
 		uintptr_t t = pci_read_field(device, PCI_BAR0, 4);
@@ -472,6 +473,7 @@ static void auto_scan_pci(uint32_t device, uint16_t v, uint16_t d, void * extra)
 	if (mode->set) return;
 	if ((v == 0x1234 && d == 0x1111) ||
 	    (v == 0x80EE && d == 0xBEEF) ||
+		(v == 0x1AF4 && d == 0x1050) ||
 	    (v == 0x10de && d == 0x0a20))  {
 		mode->set = 1;
 		graphics_install_bochs(mode->x, mode->y);

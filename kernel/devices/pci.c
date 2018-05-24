@@ -41,6 +41,7 @@ struct {
 	{0x1022, "AMD"},
 	{0x106b, "Apple, Inc."},
 	{0x1234, "Bochs/QEMU"},
+	{0x1AF4, "Red Hat, Inc."},
 	{0x8086, "Intel Corporation"},
 	{0x80EE, "VirtualBox"},
 };
@@ -53,6 +54,7 @@ struct {
 	{0x1022, 0x2000, "PCNet Ethernet Controller (pcnet)"},
 	{0x106b, 0x003f, "OHCI Controller"},
 	{0x1234, 0x1111, "VGA BIOS Graphics Extensions"},
+	{0x1AF4, 0x1050, "Virtio GPU"},
 	{0x8086, 0x100e, "Gigabit Ethernet Controller (e1000)"},
 	{0x8086, 0x1237, "PCI & Memory"},
 	{0x8086, 0x2415, "AC'97 Audio Chipset"},

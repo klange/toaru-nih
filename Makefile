@@ -198,6 +198,7 @@ run: image.iso
 	  -serial stdio \
 	  -m 1G \
 	  -soundhw ac97,pcspk \
+	  -vga virtio \
 	  -enable-kvm
 
 .PHONY: virtualbox
