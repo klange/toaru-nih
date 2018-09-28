@@ -15,8 +15,8 @@
 
 #define DEBUG_PIPES 0
 
-uint32_t read_pipe(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer);
-uint32_t write_pipe(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer);
+uint32_t read_pipe(fs_node_t *node, koff_t offset, uint32_t size, uint8_t *buffer);
+uint32_t write_pipe(fs_node_t *node, koff_t offset, uint32_t size, uint8_t *buffer);
 void open_pipe(fs_node_t *node, unsigned int flags);
 void close_pipe(fs_node_t *node);
 
@@ -82,7 +82,7 @@ static void pipe_alert_waiters(pipe_device_t * pipe) {
 	}
 }
 
-uint32_t read_pipe(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer) {
+uint32_t read_pipe(fs_node_t *node, koff_t offset, uint32_t size, uint8_t *buffer) {
 	assert(node->device != 0 && "Attempted to read from a fully-closed pipe.");
 
 	/* Retreive the pipe object associated with this file node */
@@ -125,7 +125,7 @@ uint32_t read_pipe(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buf
 	return collected;
 }
 
-uint32_t write_pipe(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer) {
+uint32_t write_pipe(fs_node_t *node, koff_t offset, uint32_t size, uint8_t *buffer) {
 	assert(node->device != 0 && "Attempted to write to a fully-closed pipe.");
 
 	/* Retreive the pipe object associated with this file node */

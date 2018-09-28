@@ -116,16 +116,16 @@ static void serial_string(char * out) {
 	}
 }
 
-static uint32_t read_serial(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer);
-static uint32_t write_serial(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer);
+static uint32_t read_serial(fs_node_t *node, koff_t offset, uint32_t size, uint8_t *buffer);
+static uint32_t write_serial(fs_node_t *node, koff_t offset, uint32_t size, uint8_t *buffer);
 static void open_serial(fs_node_t *node, unsigned int flags);
 static void close_serial(fs_node_t *node);
 
-static uint32_t read_serial(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer) {
+static uint32_t read_serial(fs_node_t *node, koff_t offset, uint32_t size, uint8_t *buffer) {
 	return read_fs(*pipe_for_port((int)node->device), offset, size, buffer);
 }
 
-static uint32_t write_serial(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer) {
+static uint32_t write_serial(fs_node_t *node, koff_t offset, uint32_t size, uint8_t *buffer) {
 	uint32_t sent = 0;
 	while (sent < size) {
 		serial_send((int)node->device, buffer[sent]);

@@ -48,3 +48,4 @@
 #define SYS_FSWAIT 59
 #define SYS_FSWAIT2 60
 #define SYS_CHOWN 61
+#define SYS_SEEKS 62

@@ -34,8 +34,8 @@ static spin_lock_t ata_lock = { 0 };
 
 static void ata_device_read_sector(struct ata_device * dev, uint32_t lba, uint8_t * buf);
 static void ata_device_write_sector_retry(struct ata_device * dev, uint32_t lba, uint8_t * buf);
-static uint32_t read_ata(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer);
-static uint32_t write_ata(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer);
+static uint32_t read_ata(fs_node_t *node, koff_t offset, uint32_t size, uint8_t *buffer);
+static uint32_t write_ata(fs_node_t *node, koff_t offset, uint32_t size, uint8_t *buffer);
 static void     open_ata(fs_node_t *node, unsigned int flags);
 static void     close_ata(fs_node_t *node);
 
@@ -49,7 +49,8 @@ static uint64_t ata_max_offset(struct ata_device * dev) {
 	return sectors * ATA_SECTOR_SIZE;
 }
 
-static uint32_t read_ata(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer) {
+static uint32_t read_ata(fs_node_t *node, koff_t _offset, uint32_t size, uint8_t *buffer) {
+	uint32_t offset = _offset;
 
 	struct ata_device * dev = (struct ata_device *)node->device;
 
@@ -101,7 +102,8 @@ static uint32_t read_ata(fs_node_t *node, uint32_t offset, uint32_t size, uint8_
 	return size;
 }
 
-static uint32_t write_ata(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer) {
+static uint32_t write_ata(fs_node_t *node, koff_t _offset, uint32_t size, uint8_t *buffer) {
+	uint32_t offset = _offset;
 	struct ata_device * dev = (struct ata_device *)node->device;
 
 	unsigned int start_block = offset / ATA_SECTOR_SIZE;

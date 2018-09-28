@@ -37,8 +37,10 @@
 
 struct fs_node;
 
-typedef uint32_t (*read_type_t) (struct fs_node *, uint32_t, uint32_t, uint8_t *);
-typedef uint32_t (*write_type_t) (struct fs_node *, uint32_t, uint32_t, uint8_t *);
+#include <sys/seekbuf.h>
+
+typedef uint32_t (*read_type_t) (struct fs_node *, koff_t, uint32_t, uint8_t *);
+typedef uint32_t (*write_type_t) (struct fs_node *, koff_t, uint32_t, uint8_t *);
 typedef void (*open_type_t) (struct fs_node *, unsigned int flags);
 typedef void (*close_type_t) (struct fs_node *);
 typedef struct dirent *(*readdir_type_t) (struct fs_node *, uint32_t);
@@ -63,8 +65,9 @@ typedef struct fs_node {
 	uint32_t gid;           /* The owning group. */
 	uint32_t flags;         /* Flags (node type, etc). */
 	uint32_t inode;         /* Inode number. */
-	uint32_t length;        /* Size of the file, in byte. */
 	uint32_t impl;          /* Used to keep track which fs it belongs to. */
+	koff_t   length;        /* Size of the file, in byte. */
+	koff_t   offset;        /* Offset for read operations XXX move this to new "file descriptor" entry */
 	uint32_t open_flags;    /* Flags passed to open (read/write/append, etc.) */
 
 	/* times */
@@ -89,7 +92,6 @@ typedef struct fs_node {
 	readlink_type_t readlink;
 
 	struct fs_node *ptr;   /* Alias pointer, for symlinks. */
-	uint32_t offset;       /* Offset for read operations XXX move this to new "file descriptor" entry */
 	int32_t refcount;
 	uint32_t nlink;
 
@@ -134,8 +136,8 @@ extern fs_node_t *fs_root;
 extern int pty_create(void *size, fs_node_t ** fs_master, fs_node_t ** fs_slave);
 
 int has_permission(fs_node_t *node, int permission_bit);
-uint32_t read_fs(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer);
-uint32_t write_fs(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer);
+uint32_t read_fs(fs_node_t *node, koff_t offset, uint32_t size, uint8_t *buffer);
+uint32_t write_fs(fs_node_t *node, koff_t offset, uint32_t size, uint8_t *buffer);
 void open_fs(fs_node_t *node, unsigned int flags);
 void close_fs(fs_node_t *node);
 struct dirent *readdir_fs(fs_node_t *node, uint32_t index);

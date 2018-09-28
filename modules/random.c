@@ -12,12 +12,12 @@
 #include <kernel/fs.h>
 #include <kernel/module.h>
 
-static uint32_t read_random(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer);
-static uint32_t write_random(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer);
+static uint32_t read_random(fs_node_t *node, koff_t offset, uint32_t size, uint8_t *buffer);
+static uint32_t write_random(fs_node_t *node, koff_t offset, uint32_t size, uint8_t *buffer);
 static void open_random(fs_node_t *node, unsigned int flags);
 static void close_random(fs_node_t *node);
 
-static uint32_t read_random(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer) {
+static uint32_t read_random(fs_node_t *node, koff_t offset, uint32_t size, uint8_t *buffer) {
 	uint32_t s = 0;
 	while (s < size) {
 		buffer[s] = krand() % 0xFF;
@@ -27,7 +27,7 @@ static uint32_t read_random(fs_node_t *node, uint32_t offset, uint32_t size, uin
 	return size;
 }
 
-static uint32_t write_random(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer) {
+static uint32_t write_random(fs_node_t *node, koff_t offset, uint32_t size, uint8_t *buffer) {
 	return size;
 }
 

@@ -15,38 +15,38 @@
 #include <kernel/printf.h>
 #include <kernel/mem.h>
 
-static uint32_t read_ramdisk(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer);
-static uint32_t write_ramdisk(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer);
+static uint32_t read_ramdisk(fs_node_t *node,  koff_t offset, uint32_t size, uint8_t *buffer);
+static uint32_t write_ramdisk(fs_node_t *node, koff_t offset, uint32_t size, uint8_t *buffer);
 static void     open_ramdisk(fs_node_t *node, unsigned int flags);
 static void     close_ramdisk(fs_node_t *node);
 
-static uint32_t read_ramdisk(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer) {
+static uint32_t read_ramdisk(fs_node_t *node, koff_t offset, uint32_t size, uint8_t *buffer) {
 
 	if (offset > node->length) {
 		return 0;
 	}
 
 	if (offset + size > node->length) {
-		unsigned int i = node->length - offset;
+		unsigned int i = node->length - (uint32_t)offset;
 		size = i;
 	}
 
-	memcpy(buffer, (void *)(node->inode + offset), size);
+	memcpy(buffer, (void *)(node->inode + (uint32_t)offset), size);
 
 	return size;
 }
 
-static uint32_t write_ramdisk(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer) {
+static uint32_t write_ramdisk(fs_node_t *node, koff_t offset, uint32_t size, uint8_t *buffer) {
 	if (offset > node->length) {
 		return 0;
 	}
 
 	if (offset + size > node->length) {
-		unsigned int i = node->length - offset;
+		unsigned int i = node->length - (uint32_t)offset;
 		size = i;
 	}
 
-	memcpy((void *)(node->inode + offset), buffer, size);
+	memcpy((void *)(node->inode + (uint32_t)offset), buffer, size);
 	return size;
 }
 

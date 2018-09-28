@@ -260,25 +260,58 @@ static int sys_execve(const char * filename, char *const argv[], char *const env
 	return exec((char *)filename, argc, (char **)argv_, (char **)envp_);
 }
 
-static int sys_seek(int fd, int offset, int whence) {
-	if (FD_CHECK(fd)) {
-		if (fd < 3) {
-			return 0;
-		}
-		switch (whence) {
-			case 0:
-				FD_ENTRY(fd)->offset = offset;
-				break;
-			case 1:
-				FD_ENTRY(fd)->offset += offset;
-				break;
-			case 2:
-				FD_ENTRY(fd)->offset = FD_ENTRY(fd)->length + offset;
-				break;
-		}
-		return FD_ENTRY(fd)->offset;
+static int seek_buf(int fd, struct seekbuf * seekbuf, koff_t * out) {
+	switch (seekbuf->whence) {
+		case 0: /* SEEK_SET */
+			FD_ENTRY(fd)->offset = seekbuf->offset;
+			break;
+		case 1: /* SEEK_CUR */
+			FD_ENTRY(fd)->offset += seekbuf->direction * seekbuf->offset;
+			break;
+		case 2: /* SEEK_END */
+			FD_ENTRY(fd)->offset = FD_ENTRY(fd)->length + seekbuf->direction * seekbuf->offset;
+			break;
 	}
-	return -EBADF;
+
+	*out = FD_ENTRY(fd)->offset;
+	return 0;
+}
+
+static int sys_seek(int fd, int offset, int whence) {
+	struct seekbuf s;
+
+	if (!FD_CHECK(fd)) {
+		return -EBADF;
+	}
+
+	if (offset < 0 && whence == 0) {
+		/* Can't seek to negative offset */
+		return -EINVAL;
+	}
+
+	if (offset < 0) {
+		s.offset = -offset;
+		s.direction = -1;
+	} else {
+		s.offset = offset;
+		s.direction = 1;
+	}
+
+	s.whence = whence;
+	koff_t out = 0;
+	seek_buf(fd, &s, &out);
+	return out;
+}
+
+static int sys_seeks(int fd, struct seekbuf * seekbuf, koff_t * out) {
+	if (!FD_CHECK(fd)) {
+		return -EBADF;
+	}
+
+	PTR_VALIDATE(seekbuf);
+	PTR_VALIDATE(out);
+
+	return seek_buf(fd, seekbuf, out);
 }
 
 static int stat_node(fs_node_t * fn, uintptr_t st) {
@@ -959,6 +992,7 @@ static int (*syscalls[])() = {
 	[SYS_FSWAIT]       = sys_fswait,
 	[SYS_FSWAIT2]      = sys_fswait_timeout,
 	[SYS_CHOWN]        = sys_chown,
+	[SYS_SEEKS]        = sys_seeks,
 };
 
 uint32_t num_syscalls = sizeof(syscalls) / sizeof(*syscalls);

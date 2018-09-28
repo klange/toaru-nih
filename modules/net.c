@@ -361,7 +361,7 @@ static int socket_wait(fs_node_t * node, void * process) {
 	return 0;
 }
 
-static uint32_t socket_read(fs_node_t * node, uint32_t offset, uint32_t size, uint8_t * buffer) {
+static uint32_t socket_read(fs_node_t * node, koff_t offset, uint32_t size, uint8_t * buffer) {
 	/* Sleep until we have something to receive */
 #if 0
 	fgets((char *)buffer, size, node->device);
@@ -370,7 +370,7 @@ static uint32_t socket_read(fs_node_t * node, uint32_t offset, uint32_t size, ui
 	return net_recv(node->device, buffer, size);
 #endif
 }
-static uint32_t socket_write(fs_node_t * node, uint32_t offset, uint32_t size, uint8_t * buffer) {
+static uint32_t socket_write(fs_node_t * node, koff_t offset, uint32_t size, uint8_t * buffer) {
 	/* Add the packet to the appropriate interface queue and send it off. */
 
 	net_send((struct socket *)node->device, buffer, size, 0);
